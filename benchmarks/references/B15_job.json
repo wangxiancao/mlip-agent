@@ -1,0 +1,7 @@
+{
+  "xyz_path": "/tmp/mlip_golden_b15.2jFHcH/b15_h2o.xyz",
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/tace/TACE-OAM-L.pt",
+  "device": "cuda",
+  "output_dir": "/tmp/mlip_golden_b15.2jFHcH/b15_out2"
+}

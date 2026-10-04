@@ -1,0 +1,105 @@
+
+**********************************************************************
+*                                                                    *
+*                        M   A   P   L   E                           *
+*                                                                    *
+*      MAchine-learning Potential for Landscape Exploration          *
+*                                                                    *
+*                                                                    *
+*      © 2025 University of Pittsburgh. All rights reserved.         *
+*      Licensed under CC BY 4.0 for academic use.                    *
+*                                                                    *
+*      Principal Developer:  Xujian Wang                             *
+*                                                                    *
+**********************************************************************
+
+
+Parsing # commands...
+Global parameter: model = ANI-2x
+Task set to 'opt'
+Global parameter: device = gpu0
+Parsed configuration:
+----------------------------------------
+Task: opt
+model          : ani-2x
+device         : gpu0
+
+                             Coordinates                              
+**********************************************************************
+
+Group 1 (inline)
+--------------------
+1    O              0.000000             0.000000             0.000000
+2    H              0.960000             0.000000             0.000000
+3    H             -0.240000             0.930000             0.000000
+
+======================================================================
+LBFGS Parameters
+======================================================================
+memory:     5
+curvature:  70.0
+max_step:   0.2
+max_iter:   256
+verbose:    1
+======================================================================
+
+
+----------------------------------------------------------------------
+                             Iteration: 1                             
+
+
+                             Coordinates                              
+----------------------------------------------------------------------
+0    O               -0.0001              -0.0001               0.0000
+1    H                0.9601               0.0000               0.0000
+2    H               -0.2400               0.9301               0.0000
+
+
+Energy:                  -76.388277 Convergence criteria  Is converged 
+Maximum Force:             0.006613     0.002850  No
+RMS Force:                 0.004174     0.001900  No
+Maximum Displacement:      0.000100     0.003150  Yes
+RMS Displacement:          0.000063     0.002100  Yes
+
+----------------------------------------------------------------------
+                             Iteration: 2                             
+
+
+                             Coordinates                              
+----------------------------------------------------------------------
+0    O               -0.0018              -0.0022               0.0000
+1    H                0.9619               0.0004               0.0000
+2    H               -0.2401               0.9318               0.0000
+
+
+Energy:                  -76.388301 Convergence criteria  Is converged 
+Maximum Force:             0.000317     0.002850  Yes
+RMS Force:                 0.000187     0.001900  Yes
+Maximum Displacement:      0.002056     0.003150  Yes
+RMS Displacement:          0.001236     0.002100  Yes
+
+LBFGS converged at iteration 2.
+Final frame written to /tmp/mlip_golden.horIzo/b2_opt_opt.xyz
+Optimization trajectory written to /tmp/mlip_golden.horIzo/b2_opt_opt_traj.xyz
+
+
+
+Program started: 2026-10-02 02:44:36
+
+======================================================================
+                      TIMING SUMMARY
+======================================================================
+Input Reading.......................................   0.151 s  (   5.7 %)
+  Settings Parsing....................................   0.150 s  (  99.3 %)
+  Coordinate Section Parsing..........................   0.000 s  (   0.2 %)
+  Post-Processing Expansion...........................   0.000 s  (   0.0 %)
+MLP Initialization..................................   0.334 s  (  12.7 %)
+Job Dispatching.....................................   2.146 s  (  81.6 %)
+  Optimization........................................   2.145 s  ( 100.0 %)
+======================================================================
+Total wall time: 2.630 s
+Total CPU time: 3.726 s
+======================================================================
+
+Program ended: 2026-10-02 02:44:39
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 2 seconds 630 msec

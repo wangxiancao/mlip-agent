@@ -1,0 +1,22 @@
+{
+  "task": "sp",
+  "model": "nequip-oam-xl (MAPLE 插件后端, plugins/maple_nequip_plugin.py)",
+  "model_path": "/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip",
+  "command": "maple b11_sp.inp b11_sp.out  (env: MAPLE_CALCULATOR_PLUGINS=maple_nequip_plugin, PYTHONPATH=mlip_agent/plugins；H2O 几何同 B5)",
+  "artifacts": [
+    "B11_sp.inp",
+    "B11_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -0.4938115754
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "插件 MODEL_ENERGY_UNIT='eV'，eV→Hartree 由 _finalize_results 统一换算；应与 B5 直算 pin / 27.211386245988 一致（同机容差 1e-6 Ha），防双重换算",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

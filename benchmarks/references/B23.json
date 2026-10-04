@@ -1,0 +1,39 @@
+{
+  "task": "sp",
+  "model": "DPA-4 (DPA4-beta, head=OMat24)",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4-beta.pt",
+  "command": "LD_LIBRARY_PATH=/usr/local/lib64 $DPA4_VENV/bin/python app/compute/scripts/dpa4_ase.py b23_job.json  (Si 金刚石原胞，PBC，device=cpu)",
+  "artifacts": [
+    "si_diamond.extxyz",
+    "B23_job.json",
+    "B23_result.json"
+  ],
+  "values": {
+    "energy_eV": -10.83853566646576
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "head": "OMat24",
+  "charge_spin": [
+    0.0,
+    1.0
+  ],
+  "versions": {
+    "deepmd-kit": "3.2.0",
+    "torch": "2.8.0+cu128",
+    "e3nn": "0.6.0",
+    "vesin": "0.6.2",
+    "device": "cpu",
+    "omp_num_threads": "1",
+    "torch_num_threads": 1
+  },
+  "note": "周期性 PBC pin（2026-10-03 落地）。CPU+OMP=1 口径同机 2 次逐位一致；周期任务 head 选周期域分支（本例 OMat24），默认 H2O_H2O_PD 不适用于晶体。Si 金刚石原胞（fcc 初基矢量，a=5.431 Å，2 原子，si_diamond.extxyz，extxyz Lattice 头；pbc=T T T）；同结构四后端互证：能量差 < 0.01 eV，对称点 |F|max < 1e-7 eV/Å",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

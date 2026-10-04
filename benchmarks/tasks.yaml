@@ -1,0 +1,539 @@
+# 验收任务集（PLAN §3.1 v1 任务集 + §3.2 v2 重构）。
+# 每条：id / description / tier / min_jobs / prompt（自然语言）/ expect / assertions。
+# 断言由 judge.py 对 runner 产出的 run_record.json 求值；kind: numeric 计入
+# 「数值正确率」，kind: execution 计入「执行成功率」（缺省 execution）。
+# 数值 pin 来源：benchmarks/references/Bx.json（M0 金标准，2026-10-02 同机复现）。
+# v2 字段说明（§3.2）：
+#   tier: guided（B1–B16、B20、B23–B26）| recovery（B17/B18，首试必失败测诊断修复）| unguided（B19）
+#   min_jobs: 期望最小作业数（效率指标基准，informational 不影响 pass/fail）
+#   断言级 only_mode: canned —— 只在 canned 模式求值（live 下恢复路径由 agent 自主决策，
+#     不强制失败首试）；job 索引支持负数（-1 = 最后一个作业）
+# 通用字段说明：
+#   auto_answer: 挂起在 ask_user_question 时 runner 自动注入的用户答复
+#   job: 断言作用的作业序号（0-based，按 job_id 排序）
+
+tasks:
+  - id: B1
+    description: sp 单点能（ANI-2x，22 原子内联坐标）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 ANI-2x 计算这个分子的单点能（电荷 0，自旋多重度 1）：
+      C -0.778126 -1.067561 0.321059 / C 1.302553 0.052120 -0.028299 /
+      C -0.971993 1.456249 0.823657 / C 1.981229 -0.418433 1.250175 /
+      C 2.264033 0.435168 -1.133107 / N 0.291164 -0.876821 -0.500399 /
+      N -2.019163 -1.372006 -0.233112 / O -1.664734 1.630223 -0.401837 /
+      H -2.258632 0.870139 -0.475899 / H 0.027849 -0.678312 -1.458495 /
+      H -0.609759 -1.367856 1.341178 / H 0.681264 0.918300 0.286941 /
+      H -2.573263 -2.057361 0.257412 / H -2.052428 -1.504542 -1.233823 /
+      H -0.368993 2.351392 0.991747 / H -1.639609 1.294215 1.674653 /
+      H 2.764449 0.291462 1.522846 / H 1.725114 0.730695 -2.037794 /
+      H 2.435593 -1.406098 1.134215 / H 1.273005 -0.447224 2.080579 /
+      H 2.850345 1.298697 -0.814322 / H 2.960009 -0.368806 -1.388910
+    expect: {backend: maple, job_types: [sp], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: event_present, event: TOOL_CALL_START}
+      - {type: tool_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -383.4722385376, tol: 1.0e-6, kind: numeric, ref: references/B1.json}
+      - {type: output_contains, text: "eV"}
+
+  - id: B2
+    description: H2O 几何优化（ANI-2x）
+    tier: guided
+    min_jobs: 1
+    prompt: "优化水分子的几何结构（用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [opt], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: opt}
+      - {type: converged, job: 0, value: true}
+      - {type: energy_hartree, job: 0, value: -76.388301, tol: 1.0e-6, kind: numeric, ref: references/B2.json}
+      - type: geometry_h2o
+        job: 0
+        oh_angstrom: [0.963788, 0.963864]
+        oh_tol: 0.005
+        angle_deg: 104.1618
+        angle_tol: 1.0
+        kind: numeric
+        ref: references/B2.json
+
+  - id: B3
+    description: H2O 优化 + 频率（ANI-2x；pin MAPLE freq(mw) 实际输出，见 TICKET-0001 / D0-5）
+    tier: guided
+    min_jobs: 2
+    prompt: "优化水分子并计算振动频率（用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [opt, freq], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 2}
+      - {type: job_type, job: 0, value: opt}
+      - {type: job_type, job: 1, value: freq}
+      - {type: converged, job: 0, value: true}
+      # 只比实频（ν > 5.0 cm⁻¹，与 MAPLE 汇总口径一致）；含 6 个近零投影模
+      - {type: frequencies_real, job: 1, values: [1966.21, 4199.58, 4607.14], tol: 20.0, kind: numeric, ref: references/B3.json}
+      - {type: n_imaginary, job: 1, value: 0, kind: numeric, ref: references/B3.json}
+
+  - id: B4
+    description: H2O 单点能（UMA uma-s-1p1/omol，本地 checkpoint，金标准内联坐标）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 UMA (uma-s-1p1, omol) 计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: uma}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: energy_hartree, job: 0, value: -76.4336200324, tol: 1.0e-6, kind: numeric, ref: references/B4.json}
+
+  - id: B5
+    description: H2O 单点能（NequIP-OAM-XL 直算路径，单位 eV，金标准内联坐标）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 NequIP-OAM-XL 模型计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: nequip, job_types: [sp], model: nequip-oam-xl}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_nequip}
+      - {type: tool_not_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_nequip}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: nequip}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -13.43729751141953, tol: 1.0e-6, kind: numeric, ref: references/B5.json}
+
+  - id: B6
+    description: 乙醇 优化→频率 链式两作业（ANI-2x）
+    tier: guided
+    min_jobs: 2
+    prompt: "先优化乙醇的结构，再对优化后的结构做频率分析（用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [opt, freq], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 2}
+      - {type: job_type, job: 0, value: opt}
+      - {type: job_type, job: 1, value: freq}
+      - {type: converged, job: 0, value: true}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: artifact_present, job: 1, name: input.out}
+      # 乙醇 9 原子 → 3N-6 = 21 个实频；权威计数看 MAPLE 汇总行（M2 修正预期）
+      - {type: out_contains, job: 1, text: "Real frequencies (ν > 5.0 cm⁻¹): 21", kind: numeric}
+      - {type: n_imaginary, job: 1, value: 0, kind: numeric}
+
+  - id: B7
+    description: H2O NVE 分子动力学 20 步 × 0.5 fs（ANI-2x）
+    tier: guided
+    min_jobs: 1
+    prompt: "对水分子跑 20 步 NVE 分子动力学，步长 0.5 fs（用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [md], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: md}
+      - {type: md_steps, job: 0, value: 20}
+      # 总能量漂移（相对首步）< 1e-3 Ha
+      - {type: energy_drift_max, job: 0, value: 1.0e-3, kind: numeric}
+
+  - id: B8
+    description: H2O O−H 刚性扫描 0.9→1.1 Å 共 5 点（ANI-2x）
+    tier: guided
+    min_jobs: 1
+    prompt: "扫描水分子一个 O−H 键从 0.9 到 1.1 Å，5 个点（刚性扫描，用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [scan], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: scan}
+      - {type: scan_energies, job: 0, values: [-76.383703, -76.388083, -76.387073, -76.382264, -76.374835], tol: 1.0e-5, kind: numeric, ref: references/B8.json}
+      # 最小值在 0.95 Å（第 2 个点，index 1）
+      - {type: scan_argmin, job: 0, value: 1, kind: numeric, ref: references/B8.json}
+
+  - id: B9
+    description: 澄清行为：信息不全必须挂起追问；用户拒绝提供则停止，不得擅自提交计算
+    tier: guided
+    min_jobs: 0
+    prompt: "帮我算一下这个体系的能量"
+    auto_answer: "这些信息我暂时没有，先不要计算"
+    expect: {backend: null, job_types: []}
+    assertions:
+      - {type: event_present, event: TOOL_CALL_START}
+      - {type: suspended_with_tool, value: ask_user_question}
+      - {type: tool_not_called, name: run_maple}
+      - {type: tool_not_called, name: run_nequip}
+      - {type: tool_not_called, name: run_tace}
+      - {type: tool_not_called, name: run_dpa4}
+      - {type: tool_not_called, name: write_maple_inp}
+      - {type: job_count, value: 0}
+      - {type: final_status, value: completed}
+
+  - id: B10
+    description: 审批流：run_maple 前挂起且无产物，批准后产物出现（计算同 B1）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 ANI-2x 计算这个分子的单点能（电荷 0，自旋多重度 1）：
+      C -0.778126 -1.067561 0.321059 / C 1.302553 0.052120 -0.028299 /
+      C -0.971993 1.456249 0.823657 / C 1.981229 -0.418433 1.250175 /
+      C 2.264033 0.435168 -1.133107 / N 0.291164 -0.876821 -0.500399 /
+      N -2.019163 -1.372006 -0.233112 / O -1.664734 1.630223 -0.401837 /
+      H -2.258632 0.870139 -0.475899 / H 0.027849 -0.678312 -1.458495 /
+      H -0.609759 -1.367856 1.341178 / H 0.681264 0.918300 0.286941 /
+      H -2.573263 -2.057361 0.257412 / H -2.052428 -1.504542 -1.233823 /
+      H -0.368993 2.351392 0.991747 / H -1.639609 1.294215 1.674653 /
+      H 2.764449 0.291462 1.522846 / H 1.725114 0.730695 -2.037794 /
+      H 2.435593 -1.406098 1.134215 / H 1.273005 -0.447224 2.080579 /
+      H 2.850345 1.298697 -0.814322 / H 2.960009 -0.368806 -1.388910
+    expect: {backend: maple, job_types: [sp], model: ani2x}
+    assertions:
+      - {type: suspended_with_tool, value: run_maple}
+      # 挂起瞬间：任何作业目录里都不应有 input.out（计算未执行）
+      - {type: no_artifact_at_suspension, suspension: 0, name: input.out}
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 1}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: artifact_present, job: 0, name: stdout.log}
+      - {type: energy_hartree, job: 0, value: -383.4722385376, tol: 1.0e-6, kind: numeric, ref: references/B1.json}
+
+  - id: B11
+    description: H2O 单点能（NequIP-OAM-XL 经 MAPLE 插件后端，TICKET-0002；金标准内联坐标同 B5，Hartree pin）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 MAPLE 的 NequIP 后端（NequIP-OAM-XL）计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: nequip-oam-xl}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: tool_not_called, name: run_nequip}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: backend, job: 0, value: maple}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -0.4938115754, tol: 1.0e-6, kind: numeric, ref: references/B11.json}
+
+  - id: B12
+    description: H2O 单点能（ANI-1x，金标准内联坐标同 B4/B5；模型覆盖扩展 D7-4）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 ANI-1x 计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: ani1x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: energy_hartree, job: 0, value: -76.3884429293, tol: 1.0e-6, kind: numeric, ref: references/B12.json}
+
+  - id: B13
+    description: H2O 单点能（AIMNet2，金标准内联坐标同 B4/B5；模型覆盖扩展 D7-4）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 AIMNet2 计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: energy_hartree, job: 0, value: -76.4770339061, tol: 1.0e-6, kind: numeric, ref: references/B13.json}
+
+  - id: B14
+    description: H2O 单点能（MACE-OFF23(S)，金标准内联坐标同 B4/B5；模型覆盖扩展 D7-4）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 MACE-OFF23(S) 计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: maceoff23s}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: energy_hartree, job: 0, value: -76.4797837970, tol: 1.0e-6, kind: numeric, ref: references/B14.json}
+
+  - id: B20
+    description: H2O 单点能（MACE-MPA-0 medium 经 MAPLE 插件后端 macempa0，金标准内联坐标同 B4/B5；材料域模型算分子，纯数值 pin）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 MACE-MPA-0 计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: macempa0}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: energy_hartree, job: 0, value: -0.5064442892, tol: 1.0e-6, kind: numeric, ref: references/B20.json}
+
+  - id: B15
+    description: H2O 单点能（TACE-OAM-L 直算路径，单位 eV，金标准内联坐标同 B5；TICKET-0004）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 TACE-OAM-L 模型计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: tace, job_types: [sp], model: tace-oam-l}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_tace}
+      - {type: tool_not_called, name: run_maple}
+      - {type: tool_not_called, name: run_nequip}
+      - {type: suspended_with_tool, value: run_tace}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: tace}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -13.926433563232422, tol: 1.0e-6, kind: numeric, ref: references/B15.json}
+
+  - id: B16
+    description: H2O 单点能（DPA-4 直算路径，CPU+OMP=1 pin 口径，单位 eV，金标准内联坐标同 B5；TICKET-0006）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 DPA-4 模型计算这个分子的单点能（电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: dpa4, job_types: [sp], model: dpa-4}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_dpa4}
+      - {type: tool_not_called, name: run_maple}
+      - {type: tool_not_called, name: run_nequip}
+      - {type: tool_not_called, name: run_tace}
+      - {type: suspended_with_tool, value: run_dpa4}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: dpa4}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -15.710773446015082, tol: 1.0e-6, kind: numeric, ref: references/B16.json}
+
+  - id: B23
+    description: Si 金刚石原胞单点能（PBC，DPA-4 直算，head=OMat24，CPU+OMP=1 pin 口径；2026-10-03 PBC 落地）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 DPA-4 模型（head 选 OMat24）计算硅（Si）金刚石原胞的单点能。这是周期性晶体体系，
+      结构文件 /root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz
+      （extxyz 格式，已含晶胞 Lattice 信息，pbc 全周期）。
+    expect: {backend: dpa4, job_types: [sp], model: dpa-4}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_dpa4}
+      - {type: tool_not_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_dpa4}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: dpa4}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -10.8385356665, tol: 1.0e-6, kind: numeric, ref: references/B23.json}
+
+  - id: B24
+    description: Si 金刚石原胞单点能（PBC，NequIP-OAM-XL 直算路径；2026-10-03 PBC 落地）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 NequIP-OAM-XL 模型计算硅（Si）金刚石原胞的单点能。这是周期性晶体体系，
+      结构文件 /root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz
+      （extxyz 格式，已含晶胞 Lattice 信息，pbc 全周期）。
+    expect: {backend: nequip, job_types: [sp], model: nequip-oam-xl}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_nequip}
+      - {type: tool_not_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_nequip}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: nequip}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -10.8384650332, tol: 1.0e-6, kind: numeric, ref: references/B24.json}
+
+  - id: B25
+    description: Si 金刚石原胞单点能（PBC，TACE-OAM-L 直算路径，邻居表自动切 matscipy；2026-10-03 PBC 落地）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 TACE-OAM-L 模型计算硅（Si）金刚石原胞的单点能。这是周期性晶体体系，
+      结构文件 /root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz
+      （extxyz 格式，已含晶胞 Lattice 信息，pbc 全周期）。
+    expect: {backend: tace, job_types: [sp], model: tace-oam-l}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_tace}
+      - {type: tool_not_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_tace}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: tace}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -10.8458156586, tol: 1.0e-6, kind: numeric, ref: references/B25.json}
+
+  - id: B26
+    description: Si 金刚石原胞单点能（PBC，UMA uma-s-1p1/omat 经 MAPLE；2026-10-03 PBC 落地）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 UMA (uma-s-1p1) 计算硅（Si）金刚石原胞的单点能（经 MAPLE）。这是周期性晶体体系，
+      task 需选周期域（omat），结构文件
+      /root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz
+      （extxyz 格式，已含晶胞 Lattice 信息，pbc 全周期）。
+    expect: {backend: maple, job_types: [sp], model: uma}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -0.3981593280, tol: 1.0e-6, kind: numeric, ref: references/B26.json}
+
+  - id: B21
+    description: H2O 单点能（DPA4C-Air-OMol25 直算，family=dpa4c，CPU+OMP=1 pin 口径；总能量约定，与 B16 不互比；2026-10-03 接入）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 DPA4C-Air 模型计算这个分子的单点能（电荷 0，多重度 1）。注意这是 DPA4C 族模型
+      （family=dpa4c，无 multitask head），模型文件
+      /root/soft/ml_potential/checkpoints/dpa4/DPA4C-Air-OMol25-100M-v20260820.pt：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: dpa4, job_types: [sp], model: dpa4c-air}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_dpa4}
+      - {type: tool_not_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_dpa4}
+      - {type: job_count, value: 1}
+      - {type: backend, job: 0, value: dpa4}
+      - {type: artifact_present, job: 0, name: result.json}
+      - {type: energy_eV, job: 0, value: -2079.8665150033, tol: 1.0e-6, kind: numeric, ref: references/B21.json}
+
+  - id: B27
+    description: Si 金刚石原胞单点能（PBC，MACE-MPA-0 经 MAPLE 插件后端；TICKET-0008 MACE PBC 改造验收）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 MACE-MPA-0 模型（MAPLE 插件后端 macempa0）计算硅（Si）金刚石原胞的单点能（经 MAPLE）。
+      这是周期性晶体体系，结构文件
+      /root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz
+      （extxyz 格式，已含晶胞 Lattice 信息，pbc 全周期）。
+    expect: {backend: maple, job_types: [sp], model: macempa0}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -0.3978120290, tol: 1.0e-6, kind: numeric, ref: references/B27.json}
+
+  - id: B22
+    description: O2 三重态单点能（AIMNet2-NSE，开壳层/多重度>1 能力扩展；TICKET-0007）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 AIMNet2-NSE 计算氧气分子的单点能，注意基态 O2 是三重态（电荷 0，自旋多重度 3）：
+      O 0.00000000 0.00000000 0.00000000 / O 1.21000000 0.00000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: aimnet2nse}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -150.4159493214, tol: 1.0e-6, kind: numeric, ref: references/B22.json}
+
+  - id: B28
+    description: H2O 单点能（AIMNet2，周期立方盒 20 Å，#pbc 渲染 + PBC 时库仑自动 dsf；TICKET-0009）
+    tier: guided
+    min_jobs: 1
+    prompt: >-
+      用 AIMNet2 计算水分子的单点能（电荷 0，多重度 1），体系放在 20 Å 立方周期晶胞中
+      （即 structure.cell=[20,20,20] 的正交周期盒）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [sp], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      - {type: suspended_with_tool, value: run_maple}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: sp}
+      - {type: artifact_present, job: 0, name: input.out}
+      - {type: energy_hartree, job: 0, value: -76.4342780468, tol: 1.0e-6, kind: numeric, ref: references/B28.json}
+
+  - id: B17
+    description: 恢复类：内联坐标直接做 freq 被校验拒绝 → 诊断后改走 opt→freq 正确链（ANI-2x；复用 B3 pin，见 §3.2）
+    tier: recovery
+    min_jobs: 2
+    prompt: >-
+      直接对这个水分子做振动频率分析（用 ANI-2x，电荷 0，多重度 1）：
+      O 0.00000000 0.00000000 0.00000000 / H 0.96000000 0.00000000 0.00000000 /
+      H -0.24000000 0.93000000 0.00000000
+    expect: {backend: maple, job_types: [opt, freq], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      # canned 剧本首试 write_maple_inp(freq + 内联坐标) 必被 jobspec 校验拒绝（D7-3）；
+      # live 下 agent 已知 freq 需 xyz_file 可直接走正确链，不强制失败首试
+      - {type: tool_call_failed, name: write_maple_inp, only_mode: canned}
+      - {type: job_count, value: 2}
+      - {type: job_type, job: 0, value: opt}
+      - {type: job_type, job: 1, value: freq}
+      - {type: converged, job: 0, value: true}
+      # 复用 B3 pin（频率容差 ±20 cm⁻¹ 对起始点不敏感，D5-3）
+      - {type: frequencies_real, job: 1, values: [1966.21, 4199.58, 4607.14], tol: 20.0, kind: numeric, ref: references/B3.json}
+      - {type: n_imaginary, job: 1, value: 0, kind: numeric, ref: references/B3.json}
+
+  - id: B18
+    description: 恢复类：20 步 NVE 未带 log_every 无逐步能量 → 诊断后 log_every=1 重跑（ANI-2x；复用 B7 口径，见 §3.2）
+    tier: recovery
+    min_jobs: 1
+    prompt: "对水分子跑 20 步 NVE 分子动力学并分析总能量漂移，步长 0.5 fs（用 ANI-2x，电荷 0，多重度 1）"
+    expect: {backend: maple, job_types: [md], model: ani2x}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+      # canned 剧本首跑不带 log_every（MAPLE 默认 100，无逐步能量行，D5-1）后重跑；
+      # live 下 agent 已知短 MD 需 log_every=1 可一次做对（min_jobs=1 计入一次成功率）
+      - {type: job_count, value: 2, only_mode: canned}
+      - {type: md_steps_max, job: 0, value: 19, only_mode: canned}
+      - {type: job_type, job: -1, value: md}
+      - {type: md_steps, job: -1, value: 20}
+      - {type: energy_drift_max, job: -1, value: 1.0e-3, kind: numeric}
+
+  - id: B19
+    description: 信息不全行为：不给模型/电荷必须先追问，注入答复后完成乙醇优化（ANI-2x，见 §3.2）
+    tier: unguided
+    min_jobs: 1
+    prompt: "优化乙醇的结构"
+    auto_answer: "用 ANI-2x，电荷 0，多重度 1"
+    expect: {backend: maple, job_types: [opt], model: ani2x}
+    assertions:
+      - {type: suspended_with_tool, value: ask_user_question}
+      - {type: final_status, value: completed}
+      - {type: job_count, value: 1}
+      - {type: job_type, job: 0, value: opt}
+      - {type: converged, job: 0, value: true}
+      - {type: artifact_present, job: 0, name: input.out}

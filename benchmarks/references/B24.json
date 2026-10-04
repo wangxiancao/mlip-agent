@@ -1,0 +1,30 @@
+{
+  "task": "sp",
+  "model": "NequIP-OAM-XL",
+  "model_path": "/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip",
+  "command": "$COMPUTE_VENV/bin/python app/compute/scripts/nequip_ase.py b24_job.json  (Si 金刚石原胞，PBC，device=cuda)",
+  "artifacts": [
+    "si_diamond.extxyz",
+    "B24_job.json",
+    "B24_result.json"
+  ],
+  "values": {
+    "energy_eV": -10.838465033163658
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "versions": {
+    "nequip": "0.17.1",
+    "torch": "2.8.0+cu128",
+    "ase": "3.27.0"
+  },
+  "note": "周期性 PBC pin（2026-10-03 落地）。GPU 数值噪声实测同机 2 次差 4.4e-7 eV（容差内）；OAM-XL 训练域即周期性晶体（OMat24→sAlex+MPtrj）。Si 金刚石原胞（fcc 初基矢量，a=5.431 Å，2 原子，si_diamond.extxyz，extxyz Lattice 头；pbc=T T T）；同结构四后端互证：能量差 < 0.01 eV，对称点 |F|max < 1e-7 eV/Å",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

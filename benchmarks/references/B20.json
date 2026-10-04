@@ -1,0 +1,22 @@
+{
+  "task": "sp",
+  "model": "macempa0 (MACE-MPA-0 medium, MAPLE 插件后端, plugins/maple_mace_plugin.py)",
+  "model_path": "/root/soft/ml_potential/checkpoints/mace/macempa0.pt",
+  "command": "maple b20_sp.inp b20_sp.out  (env: MAPLE_CALCULATOR_PLUGINS=maple_mace_plugin, PYTHONPATH=mlip_agent/plugins；H2O 几何同 B4/B5)",
+  "artifacts": [
+    "B20_sp.inp",
+    "B20_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -0.5064442892
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "材料域模型（MPTrj+sAlex 晶体）算分子：纯数值 pin，不代表分子体系物理精度。wrapper 与 mace 官方 ASE calculator（mace_mp 直载源 .model）H2O 能量差 7.5e-14 eV；本 pin 与官方 eV 值 -13.78105116683125 / 27.211386245988 差 4.9e-11 Ha，eV→Hartree 换算链正确（_finalize_results 统一换算，防双重换算）。同机连续 3 次复现逐位一致。源权重 mace-mpa-0-medium.model SHA256 75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638（MIT 许可），产物 macempa0.pt SHA256 03c1b56effe5aeb21de5a9966986f7371ec53f5818873963a8edf9968a5831ef（scripts/make_macempa0_wrapper.py，torch 2.8.0+mace-torch 0.3.10）",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

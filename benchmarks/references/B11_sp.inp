@@ -1,0 +1,7 @@
+#model=nequip-oam-xl(model_path=/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip)
+#sp(verbose=0)
+#device=gpu0
+
+O      0.00000000      0.00000000      0.00000000
+H      0.96000000      0.00000000      0.00000000
+H     -0.24000000      0.93000000      0.00000000

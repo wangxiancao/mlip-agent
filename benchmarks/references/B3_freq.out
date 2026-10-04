@@ -1,0 +1,155 @@
+
+**********************************************************************
+*                                                                    *
+*                        M   A   P   L   E                           *
+*                                                                    *
+*      MAchine-learning Potential for Landscape Exploration          *
+*                                                                    *
+*                                                                    *
+*      © 2025 University of Pittsburgh. All rights reserved.         *
+*      Licensed under CC BY 4.0 for academic use.                    *
+*                                                                    *
+*      Principal Developer:  Xujian Wang                             *
+*                                                                    *
+**********************************************************************
+
+
+Parsing # commands...
+Global parameter: model = ANI-2x
+Task set to 'freq'
+Global parameter: device = gpu0
+Parsed configuration:
+----------------------------------------
+Task: freq
+model          : ani-2x
+method         : mw
+temperature    : 298.15
+pressure_kpa   : 101.325
+ilowfreq       : 2
+verbosity      : 1
+treat_imag_as_real: False
+device         : gpu0
+
+                             Coordinates                              
+**********************************************************************
+
+Group 1 (from file: b2_opt_opt.xyz)
+--------------------
+1    O             -0.001844            -0.002154             0.000000
+2    H              0.961941             0.000355             0.000000
+3    H             -0.240097             0.931799             0.000000
+Starting frequency analysis calculation, Number of atoms: 3
+Frequency analysis summary:
+  Zero frequencies (|ν| < 5.0 cm⁻¹):    6
+  Imaginary frequencies (ν < -5.0 cm⁻¹): 0
+  Real frequencies (ν > 5.0 cm⁻¹):       3
+
+------------------------------------------------------------
+VIBRATIONAL FREQUENCIES
+------------------------------------------------------------
+
+Scaling factor for frequencies = 1.000000000 (already applied!)
+
+     0:        0.00 cm**-1
+     1:        0.00 cm**-1
+     2:        0.00 cm**-1
+     3:        0.00 cm**-1
+     4:        0.00 cm**-1
+     5:        0.00 cm**-1
+     6:     1966.21 cm**-1
+     7:     4199.58 cm**-1
+     8:     4607.14 cm**-1
+
+
+
+------------------------------------------------------------
+THERMOCHEMISTRY AT 298.15K
+------------------------------------------------------------
+
+Temperature         ...   298.15 K
+Pressure            ...   1.00 atm
+Total Mass          ...   18.02 AMU
+
+------------------------------------------------------------
+INNER ENERGY
+------------------------------------------------------------
+
+Zero point energy                ...        15.40 kcal/mol
+Thermal vibrational correction   ...         0.00 kcal/mol
+Thermal rotational correction    ...         0.89 kcal/mol
+Thermal translational correction ...         1.48 kcal/mol
+------------------------------------------------------------
+Total thermal correction         ...        17.77 kcal/mol
+
+------------------------------------------------------------
+ENTROPY
+------------------------------------------------------------
+
+Translational entropy            ...     0.034609 kcal/(mol*K)
+Rotational entropy               ...     0.011868 kcal/(mol*K)
+Vibrational entropy              ...     0.000002 kcal/(mol*K)
+------------------------------------------------------------
+Total entropy                    ...     0.046478 kcal/(mol*K)
+
+------------------------------------------------------------
+GIBBS FREE ENERGY
+------------------------------------------------------------
+
+Total enthalpy correction        ...        17.77 kcal/mol
+Total entropy correction         ...        -0.01 kcal/mol
+------------------------------------------------------------
+Final Gibbs free energy corr.    ...         3.91 kcal/mol
+
+
+------------------------------------------------------------
+NORMAL MODES
+------------------------------------------------------------
+
+These modes are the Cartesian displacements weighted by the diagonal matrix
+M(i,i)=1/sqrt(m[i]) where m[i] is the mass of the displaced atom
+Thus, these vectors are normalized but *not* orthogonal
+
+                 0              1              2              3              4              5    
+     0       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     1       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     2       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     3       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     4       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     5       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     6       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     7       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+     8       0.000000       0.000000       0.000000       0.000000       0.000000       0.000000  
+
+                 6              7              8    
+     0       0.009459      -0.009726       0.013879  
+     1       0.012209      -0.012617      -0.010708  
+     2       0.000000      -0.000000       0.000000  
+     3       0.100656       0.694414      -0.704140  
+     4      -0.695734       0.097889      -0.002056  
+     5       0.000000       0.000000       0.000000  
+     6      -0.698774      -0.079410      -0.173487  
+     7      -0.076257       0.699955       0.679169  
+     8      -0.000000      -0.000000      -0.000000  
+
+Frequency analysis completedOutput file: /tmp/mlip_golden.horIzo/b3_freq.out
+
+
+Program started: 2026-10-02 02:44:40
+
+======================================================================
+                      TIMING SUMMARY
+======================================================================
+Input Reading.......................................   0.100 s  (   8.6 %)
+  Settings Parsing....................................   0.098 s  (  97.2 %)
+  Coordinate Section Parsing..........................   0.002 s  (   2.1 %)
+  Post-Processing Expansion...........................   0.000 s  (   0.0 %)
+MLP Initialization..................................   0.312 s  (  26.7 %)
+Job Dispatching.....................................   0.758 s  (  64.7 %)
+  Frequency Calculation...............................   0.749 s  (  98.8 %)
+======================================================================
+Total wall time: 1.170 s
+Total CPU time: 2.433 s
+======================================================================
+
+Program ended: 2026-10-02 02:44:42
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 1 seconds 170 msec

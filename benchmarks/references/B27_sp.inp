@@ -1,0 +1,5 @@
+#model=macempa0(model_path=/root/soft/ml_potential/checkpoints/mace/macempa0.pt)
+#sp(verbose=0)
+#device=gpu0
+
+XYZ si_diamond.extxyz

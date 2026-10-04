@@ -1,0 +1,33 @@
+{
+  "ok": true,
+  "error": null,
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip",
+  "device": "cuda",
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "versions": {
+    "nequip": "0.17.1",
+    "torch": "2.8.0+cu128",
+    "ase": "3.27.0"
+  },
+  "energy_eV": -10.838465033163658,
+  "forces_eV_per_A": [
+    [
+      -4.2237038142380404e-08,
+      1.967624757332094e-08,
+      -2.8697038052176264e-08
+    ],
+    [
+      4.223703816375613e-08,
+      -1.9676247583514982e-08,
+      2.8697038056700267e-08
+    ]
+  ],
+  "final_structure_path": "/tmp/pbc_golden/nequip_out/final.xyz",
+  "trajectory_path": null,
+  "wall_time_s": 4.735
+}

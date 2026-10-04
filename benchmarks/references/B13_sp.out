@@ -1,0 +1,60 @@
+
+**********************************************************************
+*                                                                    *
+*                        M   A   P   L   E                           *
+*                                                                    *
+*      MAchine-learning Potential for Landscape Exploration          *
+*                                                                    *
+*                                                                    *
+*      © 2025 University of Pittsburgh. All rights reserved.         *
+*      Licensed under CC BY 4.0 for academic use.                    *
+*                                                                    *
+*      Principal Developer:  Xujian Wang                             *
+*                                                                    *
+**********************************************************************
+
+
+Parsing # commands...
+Global parameter: model = aimnet2
+Task set to 'sp'
+Global parameter: device = gpu0
+Parsed configuration:
+----------------------------------------
+Task: sp
+model          : aimnet2
+verbose        : 0
+device         : gpu0
+
+                             Coordinates                              
+**********************************************************************
+
+Group 1 (inline)
+--------------------
+1    O              0.000000             0.000000             0.000000
+2    H              0.960000             0.000000             0.000000
+3    H             -0.240000             0.930000             0.000000
+
+Charge: 0, Multiplicity: 1
+Energy: -76.4770339061 Hartree
+
+
+
+Program started: 2026-10-02 13:17:35
+
+======================================================================
+                      TIMING SUMMARY
+======================================================================
+Input Reading.......................................   0.072 s  (  13.1 %)
+  Settings Parsing....................................   0.071 s  (  98.4 %)
+  Coordinate Section Parsing..........................   0.000 s  (   0.5 %)
+  Post-Processing Expansion...........................   0.000 s  (   0.0 %)
+MLP Initialization..................................   0.193 s  (  35.0 %)
+Job Dispatching.....................................   0.286 s  (  51.8 %)
+  Single Point Energy Calculation.....................   0.285 s  (  99.7 %)
+======================================================================
+Total wall time: 0.551 s
+Total CPU time: 1.792 s
+======================================================================
+
+Program ended: 2026-10-02 13:17:36
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 0 seconds 551 msec

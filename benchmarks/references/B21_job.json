@@ -1,0 +1,8 @@
+{
+  "xyz_path": "/root/soft/ml_potential/mlip_agent/benchmarks/references/B5_h2o.xyz",
+  "task": "sp",
+  "family": "dpa4c",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4C-Air-OMol25-100M-v20260820.pt",
+  "device": "cpu",
+  "output_dir": "/tmp/mlip_golden/b21_out"
+}

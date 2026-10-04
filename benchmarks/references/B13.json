@@ -1,0 +1,18 @@
+{
+  "task": "sp",
+  "model": "aimnet2",
+  "command": "maple b_aimnet2_sp.inp b_aimnet2_sp.out  (H2O 金标准几何，同 B4/B5)",
+  "artifacts": [
+    "B13_sp.inp",
+    "B13_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -76.4770339061
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "note": "AIMNet2 支持电荷/多重度（charge 0 / mult 1 合法）；首次使用自动下载 aimnet2.pt，落盘后 HF_HUB_OFFLINE=1 下同机复现值逐位一致",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

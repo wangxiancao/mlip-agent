@@ -1,0 +1,21 @@
+{
+  "task": "freq",
+  "model": "ANI-2x",
+  "command": "maple b3_freq.inp b3_freq.out  (XYZ = B2 优化结构)",
+  "artifacts": [
+    "B3_freq.out"
+  ],
+  "values": {
+    "frequencies_cm-1": [
+      1966.21,
+      4199.58,
+      4607.14
+    ],
+    "n_imaginary": 0
+  },
+  "tolerance": {
+    "frequencies_cm-1": 20.0
+  },
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

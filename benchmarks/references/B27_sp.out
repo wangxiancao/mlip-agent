@@ -1,0 +1,59 @@
+
+**********************************************************************
+*                                                                    *
+*                        M   A   P   L   E                           *
+*                                                                    *
+*      MAchine-learning Potential for Landscape Exploration          *
+*                                                                    *
+*                                                                    *
+*      © 2025 University of Pittsburgh. All rights reserved.         *
+*      Licensed under CC BY 4.0 for academic use.                    *
+*                                                                    *
+*      Principal Developer:  Xujian Wang                             *
+*                                                                    *
+**********************************************************************
+
+
+Parsing # commands...
+Global parameter: model = macempa0 with options {'model_path': '/root/soft/ml_potential/checkpoints/mace/macempa0.pt'}
+Task set to 'sp'
+Global parameter: device = gpu0
+Parsed configuration:
+----------------------------------------
+Task: sp
+model          : macempa0(model_path=/root/soft/ml_potential/checkpoints/mace/macempa0.pt)
+verbose        : 0
+device         : gpu0
+
+                             Coordinates                              
+**********************************************************************
+
+Group 1 (from file: si_diamond.extxyz)
+--------------------
+1    Si             0.000000             0.000000             0.000000
+2    Si             1.357750             1.357750             1.357750
+
+Charge: 0, Multiplicity: 1
+Energy: -0.3978120290 Hartree
+
+
+
+Program started: 2026-10-03 16:56:03
+
+======================================================================
+                      TIMING SUMMARY
+======================================================================
+Input Reading.......................................   0.147 s  (  11.5 %)
+  Settings Parsing....................................   0.144 s  (  98.4 %)
+  Coordinate Section Parsing..........................   0.002 s  (   1.1 %)
+  Post-Processing Expansion...........................   0.000 s  (   0.0 %)
+MLP Initialization..................................   0.579 s  (  45.5 %)
+Job Dispatching.....................................   0.547 s  (  43.0 %)
+  Single Point Energy Calculation.....................   0.546 s  (  99.9 %)
+======================================================================
+Total wall time: 1.272 s
+Total CPU time: 2.491 s
+======================================================================
+
+Program ended: 2026-10-03 16:56:04
+TOTAL RUN TIME: 0 days 0 hours 0 minutes 1 seconds 272 msec

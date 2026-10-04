@@ -1,0 +1,36 @@
+{
+  "task": "sp",
+  "model": "DPA-4 (DPA4-beta, head=H2O_H2O_PD)",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4-beta.pt",
+  "command": "LD_LIBRARY_PATH=/usr/local/lib64 $DPA4_VENV/bin/python app/compute/scripts/dpa4_ase.py b16_job.json  (H2O 金标准几何同 B5，device=cpu)",
+  "artifacts": [
+    "B5_h2o.xyz",
+    "B16_job.json",
+    "B16_result.json"
+  ],
+  "values": {
+    "energy_eV": -15.710773446015082
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "head": "H2O_H2O_PD",
+  "charge_spin": [0.0, 1.0],
+  "versions": {
+    "deepmd-kit": "3.2.0",
+    "torch": "2.8.0+cu128",
+    "e3nn": "0.6.0",
+    "vesin": "0.6.2",
+    "device": "cpu",
+    "omp_num_threads": "1",
+    "torch_num_threads": 1
+  },
+  "note": "CPU+OMP=1 口径，GPU 值约 -15.7107726 eV 不可混用；pin 值经同机连续 2 次逐位一致验证（D7-8，repr 均为 -15.710773446015082）；只 pin 能量，不 pin 力（力跨进程不逐位稳定 ~1e-7 eV/Å，根因未定位）；head 默认 H2O_H2O_PD 可覆盖（checkpoint 23 分支，以 checkpoint 分支名为准）；charge_spin 固定 [0.0,1.0]（中性闭壳层）；解释器为常驻 venv /root/soft/ml_potential/dpa4_venv（TICKET-0006 裁定 1），运行需 LD_LIBRARY_PATH=/usr/local/lib64",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

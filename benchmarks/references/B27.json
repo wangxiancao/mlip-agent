@@ -1,0 +1,23 @@
+{
+  "task": "sp",
+  "model": "macempa0 (MACE-MPA-0 medium, MAPLE 插件后端 plugins/maple_mace_plugin.py)",
+  "model_path": "/root/soft/ml_potential/checkpoints/mace/macempa0.pt",
+  "command": "maple B27_sp.inp B27_sp.out  (env: MAPLE_CALCULATOR_PLUGINS=maple_mace_plugin, PYTHONPATH=mlip_agent/plugins；Si 金刚石原胞，XYZ 引用带 Lattice 的 extxyz)",
+  "artifacts": [
+    "si_diamond.extxyz",
+    "B27_sp.inp",
+    "B27_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -0.397812029
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "周期性 PBC pin（TICKET-0008，MAPLE MACE calculator PBC 改造后首个周期金标准）。同机 3 次逐位一致；与官方 mace_mp ASE calculator 直载源 .model 的对照差 0.000e+00 eV（scratch venv 验证）；对称点 |F|max ~2.5e-15 eV/Å。=-10.8250168 eV，与 DPA-4/NequIP/TACE/UMA 同结构互证（B23-B26）差 <0.02 eV。",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

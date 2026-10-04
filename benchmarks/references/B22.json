@@ -1,0 +1,21 @@
+{
+  "task": "sp",
+  "model": "aimnet2nse (AIMNet2-NSE, ωB97M-D3/def2-TZVPP UKS)",
+  "command": "maple B22_sp.inp B22_sp.out  (O2 三重态，O-O 1.21 Å，charge 0 mult 3 内联坐标)",
+  "artifacts": [
+    "B22_sp.inp",
+    "B22_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -150.4159493214
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "AIMNet2-NSE（TICKET-0007）：开壳层/自由基/多重度>1 能力扩展。checkpoint 为 mlip_agent/scripts/make_aimnet2nse_ts.py 自转 TorchScript（HF isayevlab/aimnet2-nse ensemble_0，SHA256 c65c7e1c…d723b6；产物 SHA256 69f687b8…e95ab）；与 v2 eager 对照 ΔE=2.8e-9 eV。同机 3 次逐位一致。H2O 对照 -76.4767924907 Ha vs aimnet2 B13 -76.4770339061 Ha（同理论级别不同模型代的合理偏差 2.4e-4 Ha）。许可 MIT。仅 sp 已验收，opt/freq/md 验收前勿用。",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

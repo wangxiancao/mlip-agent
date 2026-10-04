@@ -1,0 +1,41 @@
+{
+  "ok": true,
+  "error": null,
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/tace/TACE-OAM-L.pt",
+  "device": "cuda",
+  "neighborlist_backend": "ase",
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "versions": {
+    "tace": "0.2.0",
+    "torch": "2.8.0+cu128",
+    "ase": "3.27.0",
+    "device": "cuda",
+    "dtype": "float32"
+  },
+  "energy_eV": -13.926433563232422,
+  "forces_eV_per_A": [
+    [
+      -0.48121434450149536,
+      -0.5880464911460876,
+      -0.0
+    ],
+    [
+      0.6390866041183472,
+      -0.004741787910461426,
+      -0.0
+    ],
+    [
+      -0.15787220001220703,
+      0.5927883386611938,
+      -0.0
+    ]
+  ],
+  "final_structure_path": "/tmp/mlip_golden_b15.2jFHcH/b15_out2/final.xyz",
+  "trajectory_path": null,
+  "wall_time_s": 12.425
+}

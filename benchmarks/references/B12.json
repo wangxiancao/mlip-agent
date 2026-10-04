@@ -1,0 +1,18 @@
+{
+  "task": "sp",
+  "model": "ani1x",
+  "command": "maple b_ani1x_sp.inp b_ani1x_sp.out  (H2O 金标准几何，同 B4/B5)",
+  "artifacts": [
+    "B12_sp.inp",
+    "B12_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -76.3884429293
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "note": "首次使用由 MAPLE 自动下载 ani1x.pt（Wayne7815/MAPLE_models，pinned revision）；checkpoint 落盘后在 HF_HUB_OFFLINE=1 下同机复现值逐位一致",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

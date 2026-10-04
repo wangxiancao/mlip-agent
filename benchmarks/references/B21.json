@@ -1,0 +1,40 @@
+{
+  "task": "sp",
+  "model": "DPA4C-Air (DPA4C-Air-OMol25-100M-v20260820)",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4C-Air-OMol25-100M-v20260820.pt",
+  "model_sha256": "d669b3b2e9cf393f1c50ababc1a961da88b5cf1fe1a6d39cd913e326b89095eb",
+  "command": "LD_LIBRARY_PATH=/usr/local/lib64 $DPA4_VENV/bin/python app/compute/scripts/dpa4_ase.py b21_job.json  (H2O 金标准几何同 B5，device=cpu，family=dpa4c)",
+  "artifacts": [
+    "B5_h2o.xyz",
+    "B21_job.json",
+    "B21_result.json"
+  ],
+  "values": {
+    "energy_eV": -2079.8665150032502
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "family": "dpa4c",
+  "charge_spin": [
+    0.0,
+    1.0
+  ],
+  "versions": {
+    "deepmd-kit": "3.2.0",
+    "torch": "2.8.0+cu128",
+    "e3nn": "0.6.0",
+    "vesin": "0.6.2",
+    "device": "cpu",
+    "omp_num_threads": "1",
+    "torch_num_threads": 1
+  },
+  "note": "DPA4C 族（family=dpa4c，无 multitask head；DeepPot 不带 head 直接加载，显式传 head 会静默忽略——family 字段即防线）。CPU+OMP=1 口径同机 2 次逐位一致；GPU 对照 -2079.866514884041 eV（差 1.2e-7，口径不同不可混用）。注意：DPA4C-OMol25 输出总能量（H2O ≈ -2080 eV），与 DPA4-beta 的 B16 pin （-15.71 eV，另一参考能约定）绝对值不可直接比较。许可 CC BY-NC 4.0（非商业）。",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

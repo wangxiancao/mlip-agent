@@ -1,0 +1,48 @@
+{
+  "ok": true,
+  "error": null,
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4C-Air-OMol25-100M-v20260820.pt",
+  "device": "cpu",
+  "family": "dpa4c",
+  "head": null,
+  "charge_spin": [
+    0.0,
+    1.0
+  ],
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "versions": {
+    "deepmd-kit": "3.2.0",
+    "torch": "2.8.0+cu128",
+    "e3nn": "0.6.0",
+    "vesin": "0.6.2",
+    "device": "cpu",
+    "omp_num_threads": "1",
+    "torch_num_threads": 1
+  },
+  "energy_eV": -2079.8665150032502,
+  "forces_eV_per_A": [
+    [
+      -0.039270445704460144,
+      -0.018451422452926636,
+      5.14092983346254e-18
+    ],
+    [
+      0.0991615355014801,
+      -0.04272539168596268,
+      6.8339765122095044e-18
+    ],
+    [
+      -0.05989108979701996,
+      0.06117681413888931,
+      -1.1974906345672044e-17
+    ]
+  ],
+  "final_structure_path": "/tmp/golden_staging/B21/run1/final.xyz",
+  "trajectory_path": null,
+  "wall_time_s": 3.798
+}

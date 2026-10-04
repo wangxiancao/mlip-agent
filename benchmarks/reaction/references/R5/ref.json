@@ -1,0 +1,63 @@
+{
+  "reaction": "R5",
+  "name": "CH3 + C2H4 → C3H7（自由基加成）",
+  "type": "radical_addition",
+  "species": [
+    {
+      "file": "r1.xyz",
+      "gmtkn_name": "ch3",
+      "charge": 0,
+      "multiplicity": 2,
+      "role": "reactant",
+      "n_atoms": 4
+    },
+    {
+      "file": "r2.xyz",
+      "gmtkn_name": "c2h4",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "reactant",
+      "n_atoms": 6
+    },
+    {
+      "file": "p1.xyz",
+      "gmtkn_name": "c3h7",
+      "charge": 0,
+      "multiplicity": 2,
+      "role": "product",
+      "n_atoms": 10
+    }
+  ],
+  "ts": {
+    "file": "ts.xyz",
+    "gmtkn_name": "c3h7ts",
+    "charge": 0,
+    "multiplicity": 2,
+    "n_atoms": 10
+  },
+  "barriers_kcal": {
+    "forward": 6.4,
+    "reverse": 33.0,
+    "reaction_energy": -26.6
+  },
+  "scan": {
+    "species": "r2",
+    "atom_i": 1,
+    "atom_j": 2,
+    "symbols": [
+      "C",
+      "C"
+    ],
+    "equilibrium_ang": 1.3312,
+    "start_ang": 1.3312,
+    "end_ang": 1.6312,
+    "points": 6
+  },
+  "reference": {
+    "dataset": "GMTKN55",
+    "subset": "BH76",
+    "level": "high-level WFT reference（见 GMTKN55 论文；BH76 条目源自 HTBH38/NHTBH38/DBH 系列）",
+    "citation": "Goerigk, Hansen, Bauer, Ehrlich, Najibi, Grimme, PCCP 2017, DOI 10.1039/C7CP04913G",
+    "units": "kcal/mol（能量差，相对各自物种的分离/独立极小）"
+  }
+}

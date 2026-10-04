@@ -1,0 +1,7 @@
+{
+  "xyz_path": "/tmp/dpa4_test2/h2o.xyz",
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4-beta.pt",
+  "device": "cpu",
+  "output_dir": "/tmp/dpa4_test2/out"
+}

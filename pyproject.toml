@@ -1,0 +1,34 @@
+[project]
+name = "mlip_agent"
+version = "0.1.0"
+description = "MLIP agent compute framework: LLM orchestration over MAPLE/NequIP subprocess calculations"
+requires-python = ">=3.13"
+dependencies = [
+    "a13n-harness==0.5.2",
+    "a13n-stream-protocol>=0.5.2",
+    "fastapi>=0.142.2",
+    "pydantic>=2.13.5",
+    "pydantic-settings>=2.15.0",
+    "uvicorn>=0.54.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+asyncio_mode = "auto"
+markers = [
+    "gpu: requires a CUDA GPU and the COMPUTE_VENV MAPLE stack",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]

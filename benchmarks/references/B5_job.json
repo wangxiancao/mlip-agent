@@ -1,0 +1,7 @@
+{
+  "xyz_path": "/tmp/mlip_golden.kaPrV1/b5_h2o.xyz",
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip",
+  "device": "cuda",
+  "output_dir": "/tmp/mlip_golden.kaPrV1/b5_out"
+}

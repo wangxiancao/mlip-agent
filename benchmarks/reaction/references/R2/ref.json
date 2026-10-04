@@ -1,0 +1,71 @@
+{
+  "reaction": "R2",
+  "name": "H + N2O → OH + N2（氢转移）",
+  "type": "h_transfer",
+  "species": [
+    {
+      "file": "r1.xyz",
+      "gmtkn_name": "h",
+      "charge": 0,
+      "multiplicity": 2,
+      "role": "reactant",
+      "n_atoms": 1
+    },
+    {
+      "file": "r2.xyz",
+      "gmtkn_name": "n2o",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "reactant",
+      "n_atoms": 3
+    },
+    {
+      "file": "p1.xyz",
+      "gmtkn_name": "oh",
+      "charge": 0,
+      "multiplicity": 2,
+      "role": "product",
+      "n_atoms": 2
+    },
+    {
+      "file": "p2.xyz",
+      "gmtkn_name": "n2",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "product",
+      "n_atoms": 2
+    }
+  ],
+  "ts": {
+    "file": "ts.xyz",
+    "gmtkn_name": "n2ohts",
+    "charge": 0,
+    "multiplicity": 2,
+    "n_atoms": 4
+  },
+  "barriers_kcal": {
+    "forward": 17.7,
+    "reverse": 82.6,
+    "reaction_energy": -64.9
+  },
+  "scan": {
+    "species": "r2",
+    "atom_i": 2,
+    "atom_j": 3,
+    "symbols": [
+      "N",
+      "O"
+    ],
+    "equilibrium_ang": 1.187,
+    "start_ang": 1.187,
+    "end_ang": 1.787,
+    "points": 6
+  },
+  "reference": {
+    "dataset": "GMTKN55",
+    "subset": "BH76",
+    "level": "high-level WFT reference（见 GMTKN55 论文；BH76 条目源自 HTBH38/NHTBH38/DBH 系列）",
+    "citation": "Goerigk, Hansen, Bauer, Ehrlich, Najibi, Grimme, PCCP 2017, DOI 10.1039/C7CP04913G",
+    "units": "kcal/mol（能量差，相对各自物种的分离/独立极小）"
+  }
+}

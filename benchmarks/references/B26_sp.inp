@@ -1,0 +1,5 @@
+#model=uma(size=uma-s-1p1,task=omat,checkpoint_path=/root/soft/ml_potential/checkpoints/uma/uma-s-1p1.pt)
+#sp(verbose=0)
+#device=gpu0
+
+XYZ si_diamond.extxyz

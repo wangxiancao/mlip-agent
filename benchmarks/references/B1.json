@@ -1,0 +1,17 @@
+{
+  "task": "sp",
+  "model": "ANI-2x",
+  "command": "maple b1_sp.inp b1_sp.out  (b1_sp.inp = MAPLE/examples/sp/sp.inp 复制件)",
+  "artifacts": [
+    "B1_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -383.4722385376
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "note": "同机同库复现值；MAPLE 仓库自带 sp.out 为 -383.4722385600，差 <1e-6（GPU 数值噪声）",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

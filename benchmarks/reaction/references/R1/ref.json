@@ -1,0 +1,55 @@
+{
+  "reaction": "R1",
+  "name": "HCN→HNC 异构化",
+  "type": "unimolecular_isomerization",
+  "species": [
+    {
+      "file": "r1.xyz",
+      "gmtkn_name": "hcn",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "reactant",
+      "n_atoms": 3
+    },
+    {
+      "file": "p1.xyz",
+      "gmtkn_name": "hnc",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "product",
+      "n_atoms": 3
+    }
+  ],
+  "ts": {
+    "file": "ts.xyz",
+    "gmtkn_name": "hcnts",
+    "charge": 0,
+    "multiplicity": 1,
+    "n_atoms": 3
+  },
+  "barriers_kcal": {
+    "forward": 48.1,
+    "reverse": 33.0,
+    "reaction_energy": 15.1
+  },
+  "scan": {
+    "species": "r1",
+    "atom_i": 1,
+    "atom_j": 3,
+    "symbols": [
+      "H",
+      "C"
+    ],
+    "equilibrium_ang": 1.0659,
+    "start_ang": 1.0659,
+    "end_ang": 1.6159,
+    "points": 6
+  },
+  "reference": {
+    "dataset": "GMTKN55",
+    "subset": "BH76",
+    "level": "high-level WFT reference（见 GMTKN55 论文；BH76 条目源自 HTBH38/NHTBH38/DBH 系列）",
+    "citation": "Goerigk, Hansen, Bauer, Ehrlich, Najibi, Grimme, PCCP 2017, DOI 10.1039/C7CP04913G",
+    "units": "kcal/mol（能量差，相对各自物种的分离/独立极小）"
+  }
+}

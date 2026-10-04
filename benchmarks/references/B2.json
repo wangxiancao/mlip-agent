@@ -1,0 +1,25 @@
+{
+  "task": "opt",
+  "model": "ANI-2x",
+  "command": "maple b2_opt.inp b2_opt.out  (H2O, 起始 O-H 0.96 Å)",
+  "artifacts": [
+    "B2_opt.out",
+    "B2_opt.xyz"
+  ],
+  "values": {
+    "converged": true,
+    "final_energy_hartree": -76.388301,
+    "oh_bond_angstrom": [
+      0.963788,
+      0.963864
+    ],
+    "hoh_angle_deg": 104.1618
+  },
+  "tolerance": {
+    "final_energy_hartree": 1e-06,
+    "oh_bond_angstrom": 0.005,
+    "hoh_angle_deg": 1.0
+  },
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

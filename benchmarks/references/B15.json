@@ -1,0 +1,33 @@
+{
+  "task": "sp",
+  "model": "TACE-OAM-L",
+  "model_path": "/root/soft/ml_potential/checkpoints/tace/TACE-OAM-L.pt",
+  "command": "$COMPUTE_VENV/bin/python app/compute/scripts/tace_ase.py b15_job.json  (H2O 金标准几何同 B5)",
+  "artifacts": [
+    "B5_h2o.xyz",
+    "B15_job.json",
+    "B15_result.json"
+  ],
+  "values": {
+    "energy_eV": -13.926433563232422
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "neighborlist_backend": "ase",
+  "versions": {
+    "tace": "0.2.0",
+    "torch": "2.8.0+cu128",
+    "ase": "3.27.0",
+    "device": "cuda",
+    "dtype": "float32"
+  },
+  "note": "TACE ASE 计算器返回标准 ASE 单位（eV/Å），与 MAPLE Hartree 语义不同，勿混用；neighborlist_backend 固定 'ase'（matscipy 对零胞分子 Singular matrix，TICKET-0004 前置条件 1）；pin 值经同机连续 2 次逐位一致验证（D7-6），与 TICKET-0004 提案的预估值不同，以本 pin 为准",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

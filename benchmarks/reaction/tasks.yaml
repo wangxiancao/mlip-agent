@@ -1,0 +1,312 @@
+# Benchmark v3 反应能垒套件（PLAN §3.3）：GMTKN55 BH76 六反应 × 三档知识梯度。
+# tier: baseline（基本信息）/ decision（+ladder.md 注入）/ replication（完整工作流）。
+# 判定参考量由 suite_judge 按 ref.json 做反应感知求值（coverage/MAE/attempts/cost），
+# 此处的 assertions 只做最低执行检查；数据集出处见各 references/R*/ref.json。
+
+tasks:
+
+  - id: R1-base
+    description: "[baseline] HCN→HNC 异构化：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R1
+    min_jobs: 7
+    timeout_s: 5400
+    prompt: >-
+      研究反应 HCN→HNC 异构化（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/r1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/p1.xyz（电荷 0，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/ts.xyz（电荷 0，多重度 1）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R1-dec
+    description: "[decision] HCN→HNC 异构化：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R1
+    min_jobs: 7
+    timeout_s: 5400
+    prompt: >-
+      研究反应 HCN→HNC 异构化（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/r1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/p1.xyz（电荷 0，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/ts.xyz（电荷 0，多重度 1）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R1-repl
+    description: "[replication] HCN→HNC 异构化：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R1
+    min_jobs: 7
+    timeout_s: 5400
+    prompt: >-
+      研究反应 HCN→HNC 异构化（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/r1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/p1.xyz（电荷 0，多重度 1）），分子物种依次做几何优化（opt）。所有物种都是分子，均需优化与频率。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r1.xyz 优化后的结构，先把 H−C 键（原子 1−3）键长直接改为 1.0659 Å，再扫描 6 个点（delta=0.1100，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R1/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 0，多重度 1）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R2-base
+    description: "[baseline] H + N2O → OH + N2（氢转移）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R2
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 H + N2O → OH + N2（氢转移）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p2.xyz（电荷 0，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R2-dec
+    description: "[decision] H + N2O → OH + N2（氢转移）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R2
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 H + N2O → OH + N2（氢转移）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p2.xyz（电荷 0，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R2-repl
+    description: "[replication] H + N2O → OH + N2（氢转移）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R2
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 H + N2O → OH + N2（氢转移）（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/p2.xyz（电荷 0，多重度 1）），分子物种依次做几何优化（opt）。单原子物种（r1.xyz）无需优化与频率，各做一次 sp 即可。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r2.xyz 优化后的结构，先把 N−O 键（原子 2−3）键长直接改为 1.187 Å，再扫描 6 个点（delta=0.1200，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R2/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 0，多重度 2）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R3-base
+    description: "[baseline] OH + CH4 → H2O + CH3（氢抽取）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R3
+    min_jobs: 11
+    timeout_s: 5400
+    prompt: >-
+      研究反应 OH + CH4 → H2O + CH3（氢抽取）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p2.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R3-dec
+    description: "[decision] OH + CH4 → H2O + CH3（氢抽取）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R3
+    min_jobs: 11
+    timeout_s: 5400
+    prompt: >-
+      研究反应 OH + CH4 → H2O + CH3（氢抽取）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p2.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R3-repl
+    description: "[replication] OH + CH4 → H2O + CH3（氢抽取）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R3
+    min_jobs: 11
+    timeout_s: 5400
+    prompt: >-
+      研究反应 OH + CH4 → H2O + CH3（氢抽取）（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/p2.xyz（电荷 0，多重度 2）），分子物种依次做几何优化（opt）。所有物种都是分子，均需优化与频率。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r2.xyz 优化后的结构，先把 C−H 键（原子 1−2）键长直接改为 1.0874 Å，再扫描 6 个点（delta=0.1200，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R3/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 0，多重度 2）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R4-base
+    description: "[baseline] F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R4
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r1.xyz（电荷 -1，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p2.xyz（电荷 -1，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/ts.xyz（电荷 -1，多重度 1）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R4-dec
+    description: "[decision] F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R4
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r1.xyz（电荷 -1，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p2.xyz（电荷 -1，多重度 1）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/ts.xyz（电荷 -1，多重度 1）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R4-repl
+    description: "[replication] F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R4
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r1.xyz（电荷 -1，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p1.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/p2.xyz（电荷 -1，多重度 1）），分子物种依次做几何优化（opt）。单原子物种（r1.xyz, p2.xyz）无需优化与频率，各做一次 sp 即可。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r2.xyz 优化后的结构，先把 C−Cl 键（原子 1−2）键长直接改为 1.7827 Å，再扫描 6 个点（delta=0.1600，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R4/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 -1，多重度 1）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R5-base
+    description: "[baseline] CH3 + C2H4 → C3H7（自由基加成）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R5
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 CH3 + C2H4 → C3H7（自由基加成）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/p1.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R5-dec
+    description: "[decision] CH3 + C2H4 → C3H7（自由基加成）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R5
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 CH3 + C2H4 → C3H7（自由基加成）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/p1.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/ts.xyz（电荷 0，多重度 2）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R5-repl
+    description: "[replication] CH3 + C2H4 → C3H7（自由基加成）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R5
+    min_jobs: 9
+    timeout_s: 5400
+    prompt: >-
+      研究反应 CH3 + C2H4 → C3H7（自由基加成）（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/p1.xyz（电荷 0，多重度 2）），分子物种依次做几何优化（opt）。所有物种都是分子，均需优化与频率。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r2.xyz 优化后的结构，先把 C−C 键（原子 1−2）键长直接改为 1.3312 Å，再扫描 6 个点（delta=0.0600，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R5/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 0，多重度 2）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R6-base
+    description: "[baseline] O(3P) + CH4 → OH + CH3（三重态氧抽取氢）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: baseline
+    reaction: R6
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 O(3P) + CH4 → OH + CH3（三重态氧抽取氢）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r1.xyz（电荷 0，多重度 3）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p2.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/ts.xyz（电荷 0，多重度 3）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R6-dec
+    description: "[decision] O(3P) + CH4 → OH + CH3（三重态氧抽取氢）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: decision
+    reaction: R6
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 O(3P) + CH4 → OH + CH3（三重态氧抽取氢）（全部用 AIMNet2 模型）。
+      各物种结构文件：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r1.xyz（电荷 0，多重度 3）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p2.xyz（电荷 0，多重度 2）。
+      过渡态初猜：/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/ts.xyz（电荷 0，多重度 3）。
+      目标：优化各分子并做振动频率分析，沿反应坐标做键长扫描，搜索过渡态并验证，最后给出正向能垒、反向能垒与反应能（单位 kcal/mol）。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}
+
+  - id: R6-repl
+    description: "[replication] O(3P) + CH4 → OH + CH3（三重态氧抽取氢）：opt/freq/scan/ts/ts_freq 六段链 + 能垒汇总"
+    tier: replication
+    reaction: R6
+    min_jobs: 10
+    timeout_s: 5400
+    prompt: >-
+      研究反应 O(3P) + CH4 → OH + CH3（三重态氧抽取氢）（全部用 AIMNet2 模型），按以下工作流执行：
+      1. 读入各物种结构（/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r1.xyz（电荷 0，多重度 3）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/r2.xyz（电荷 0，多重度 1）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p1.xyz（电荷 0，多重度 2）；/root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/p2.xyz（电荷 0，多重度 2）），分子物种依次做几何优化（opt）。单原子物种（r1.xyz）无需优化与频率，各做一次 sp 即可。
+      2. 对每个优化收敛的分子做频率分析（job_type=freq）：structure 必须用这个 opt 作业返回摘要里 parsed.final_xyz 的坐标经 build_structure(source_type="inline_coords") 落盘后的 xyz 路径；极小点应 0 虚频，若出现虚频则提高 opt 收敛等级重优化后重算。
+      3. 刚性扫描：取 r2.xyz 优化后的结构，先把 C−H 键（原子 1−2）键长直接改为 1.0874 Å，再扫描 6 个点（delta=0.1200，n_steps=5）。
+      4. 用 /root/soft/ml_potential/mlip_agent/benchmarks/reaction/references/R6/ts.xyz 作初猜做过渡态搜索（job_type=ts，method=prfo，电荷 0，多重度 3）。
+      5. 对 TS 结构做频率分析（同样用 xyz_file），应恰有 1 个虚频。
+      6. 汇总：E(反应物)、E(产物) 分别为各自物种优化后能量之和（Hartree）；正向能垒 = E(TS) − E(反应物)，反向能垒 = E(TS) − E(产物)，反应能 = E(产物) − E(反应物)，乘以 627.5095 换算为 kcal/mol 报告。
+    expect: {backend: maple, job_types: [opt, freq, scan, ts], model: aimnet2}
+    assertions:
+      - {type: final_status, value: completed}
+      - {type: tool_called, name: run_maple}

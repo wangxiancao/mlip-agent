@@ -1,0 +1,21 @@
+{
+  "task": "sp",
+  "model": "aimnet2 (PBC, coulomb 缺省自动 dsf)",
+  "command": "maple B28_sp.inp B28_sp.out  (H2O 金标准几何，#pbc(20,20,20) 立方盒)",
+  "artifacts": [
+    "B28_sp.inp",
+    "B28_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -76.4342780468
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "AIMNet2 PBC（TICKET-0009）：周期邻居表 matscipy MIC + cell/shifts 入图，PBC 时库仑缺省自动切 dsf（对齐上游）。同机 3 次逐位一致。对照（同胞）：显式 simple -76.4770339061 Ha（与气相 B13 逐位一致，20 Å 盒内无跨边界对）、ewald -76.4770571854 Ha（记录不 pin）；与上游 nvalchemiops 逐位零差互证。能力边界：PBC 仅承诺 sp/opt；AIMNet2 训练域气相分子，周期计算仅分子晶体类可信。",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

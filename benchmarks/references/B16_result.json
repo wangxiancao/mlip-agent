@@ -1,0 +1,47 @@
+{
+  "ok": true,
+  "error": null,
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4-beta.pt",
+  "device": "cpu",
+  "head": "H2O_H2O_PD",
+  "charge_spin": [
+    0.0,
+    1.0
+  ],
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "versions": {
+    "deepmd-kit": "3.2.0",
+    "torch": "2.8.0+cu128",
+    "e3nn": "0.6.0",
+    "vesin": "0.6.2",
+    "device": "cpu",
+    "omp_num_threads": "1",
+    "torch_num_threads": 1
+  },
+  "energy_eV": -15.710773446015082,
+  "forces_eV_per_A": [
+    [
+      -0.04994647856801748,
+      -0.03276234492659569,
+      6.798654794692993e-08
+    ],
+    [
+      0.0782434931024909,
+      -0.015377763658761978,
+      6.472691893577576e-08
+    ],
+    [
+      -0.02829701453447342,
+      0.048140108585357666,
+      -1.327134668827057e-07
+    ]
+  ],
+  "final_structure_path": "/tmp/dpa4_test2/out/final.xyz",
+  "trajectory_path": null,
+  "wall_time_s": 5.783
+}

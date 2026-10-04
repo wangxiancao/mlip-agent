@@ -1,0 +1,25 @@
+{
+  "task": "sp",
+  "model": "NequIP-OAM-XL",
+  "model_path": "/root/soft/ml_potential/checkpoints/nequip/NequIP-OAM-XL-0.1.nequip.zip",
+  "command": "$COMPUTE_VENV/bin/python app/compute/scripts/nequip_ase.py b5_job.json  (H2O, 起始 O-H 0.96 Å)",
+  "artifacts": [
+    "B5_h2o.xyz",
+    "B5_job.json",
+    "B5_result.json"
+  ],
+  "values": {
+    "energy_eV": -13.43729751141953
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "note": "NequIP ASE 计算器返回标准 ASE 单位（eV/Å），与 MAPLE Hartree 语义不同，勿混用",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

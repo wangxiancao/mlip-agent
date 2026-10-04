@@ -1,0 +1,33 @@
+{
+  "task": "sp",
+  "model": "TACE-OAM-L",
+  "model_path": "/root/soft/ml_potential/checkpoints/tace/TACE-OAM-L.pt",
+  "command": "$COMPUTE_VENV/bin/python app/compute/scripts/tace_ase.py b25_job.json  (Si 金刚石原胞，PBC，device=cuda)",
+  "artifacts": [
+    "si_diamond.extxyz",
+    "B25_job.json",
+    "B25_result.json"
+  ],
+  "values": {
+    "energy_eV": -10.845815658569336
+  },
+  "tolerance": {
+    "energy_eV": 1e-06
+  },
+  "units": {
+    "energy": "eV",
+    "forces": "eV/Angstrom",
+    "length": "Angstrom"
+  },
+  "neighborlist_backend": "matscipy",
+  "versions": {
+    "tace": "0.2.0",
+    "torch": "2.8.0+cu128",
+    "ase": "3.27.0",
+    "device": "cuda",
+    "dtype": "float32"
+  },
+  "note": "周期性 PBC pin（2026-10-03 落地）。周期体系邻居表自动切 matscipy（分子保持 ase，TICKET-0004 前置条件 1 不受影响）；同机 2 次逐位一致。Si 金刚石原胞（fcc 初基矢量，a=5.431 Å，2 原子，si_diamond.extxyz，extxyz Lattice 头；pbc=T T T）；同结构四后端互证：能量差 < 0.01 eV，对称点 |F|max < 1e-7 eV/Å",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

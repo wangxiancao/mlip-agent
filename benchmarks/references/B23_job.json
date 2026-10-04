@@ -1,0 +1,8 @@
+{
+  "xyz_path": "/root/soft/ml_potential/mlip_agent/benchmarks/references/si_diamond.extxyz",
+  "task": "sp",
+  "model_path": "/root/soft/ml_potential/checkpoints/dpa4/DPA4-beta.pt",
+  "device": "cpu",
+  "head": "OMat24",
+  "output_dir": "/tmp/mlip_golden/dpa4_out"
+}

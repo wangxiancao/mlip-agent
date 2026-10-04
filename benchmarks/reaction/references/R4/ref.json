@@ -1,0 +1,71 @@
+{
+  "reaction": "R4",
+  "name": "F− + CH3Cl → CH3F + Cl−（S_N2，阴离子）",
+  "type": "sn2_anionic",
+  "species": [
+    {
+      "file": "r1.xyz",
+      "gmtkn_name": "f-",
+      "charge": -1,
+      "multiplicity": 1,
+      "role": "reactant",
+      "n_atoms": 1
+    },
+    {
+      "file": "r2.xyz",
+      "gmtkn_name": "ch3cl",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "reactant",
+      "n_atoms": 5
+    },
+    {
+      "file": "p1.xyz",
+      "gmtkn_name": "ch3f",
+      "charge": 0,
+      "multiplicity": 1,
+      "role": "product",
+      "n_atoms": 5
+    },
+    {
+      "file": "p2.xyz",
+      "gmtkn_name": "cl-",
+      "charge": -1,
+      "multiplicity": 1,
+      "role": "product",
+      "n_atoms": 1
+    }
+  ],
+  "ts": {
+    "file": "ts.xyz",
+    "gmtkn_name": "fch3clts",
+    "charge": -1,
+    "multiplicity": 1,
+    "n_atoms": 6
+  },
+  "barriers_kcal": {
+    "forward": -12.3,
+    "reverse": 19.8,
+    "reaction_energy": -32.1
+  },
+  "scan": {
+    "species": "r2",
+    "atom_i": 1,
+    "atom_j": 2,
+    "symbols": [
+      "C",
+      "Cl"
+    ],
+    "equilibrium_ang": 1.7827,
+    "start_ang": 1.7827,
+    "end_ang": 2.5827,
+    "points": 6
+  },
+  "reference": {
+    "dataset": "GMTKN55",
+    "subset": "BH76",
+    "level": "high-level WFT reference（见 GMTKN55 论文；BH76 条目源自 HTBH38/NHTBH38/DBH 系列）",
+    "citation": "Goerigk, Hansen, Bauer, Ehrlich, Najibi, Grimme, PCCP 2017, DOI 10.1039/C7CP04913G",
+    "units": "kcal/mol（能量差，相对各自物种的分离/独立极小）"
+  }
+}

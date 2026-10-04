@@ -1,0 +1,18 @@
+{
+  "task": "sp",
+  "model": "maceoff23s",
+  "command": "maple b_maceoff23s_sp.inp b_maceoff23s_sp.out  (H2O 金标准几何，同 B4/B5)",
+  "artifacts": [
+    "B14_sp.inp",
+    "B14_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -76.4797837970
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "note": "maceoff23s 不在 Wayne7815/MAPLE_models（REQUIRES_LOCAL_MODEL_FILE，无自动下载）；checkpoint 为本地自制 scripted wrapper（ACEsuit/mace-off 官方 MACE-OFF23_small.model 经 e3nn jit.compile 封装，见 docs/decisions.md D7-4）；同机三次复现逐位一致",
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}

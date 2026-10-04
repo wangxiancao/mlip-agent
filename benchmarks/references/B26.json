@@ -1,0 +1,23 @@
+{
+  "task": "sp",
+  "model": "uma(size=uma-s-1p1,task=omat)",
+  "checkpoint": "/root/soft/ml_potential/checkpoints/uma/uma-s-1p1.pt",
+  "command": "maple B26_sp.inp B26_sp.out  (Si 金刚石原胞，XYZ 引用带 Lattice 的 extxyz；PBC 经 MAPLE 原生解析)",
+  "artifacts": [
+    "si_diamond.extxyz",
+    "B26_sp.inp",
+    "B26_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -0.398159328
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "units": {
+    "energy": "Hartree"
+  },
+  "note": "周期性 PBC pin（2026-10-03 落地）。UMA 是 MAPLE 内唯一 SUPPORTS_PBC 后端；omat 为周期 task（omol 与 PBC 互斥）。同机 2 次差 2.2e-9 Ha（容差内）。结构亦可用 JobSpec structure.cell 渲染 #pbc(...)（内联路径已实跑验证，与 XYZ-Lattice 路径差 5e-6 eV，源于手填 cellpar 舍入）。Si 金刚石原胞（fcc 初基矢量，a=5.431 Å，2 原子，si_diamond.extxyz，extxyz Lattice 头；pbc=T T T）；同结构四后端互证：能量差 < 0.01 eV，对称点 |F|max < 1e-7 eV/Å",
+  "generated": "2026-10-03",
+  "generator": "scripts/make_golden_refs.sh"
+}

@@ -1,0 +1,17 @@
+{
+  "task": "sp",
+  "model": "uma(size=uma-s-1p1,task=omol)",
+  "checkpoint": "/root/soft/ml_potential/checkpoints/uma/uma-s-1p1.pt",
+  "command": "maple b4_uma_sp.inp b4_uma_sp.out  (H2O, 本地 checkpoint 绝对路径)",
+  "artifacts": [
+    "B4_sp.out"
+  ],
+  "values": {
+    "energy_hartree": -76.4336200324
+  },
+  "tolerance": {
+    "energy_hartree": 1e-06
+  },
+  "generated": "2026-10-02",
+  "generator": "scripts/make_golden_refs.sh"
+}
