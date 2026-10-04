@@ -28,7 +28,7 @@
            超时杀进程组、env 白名单 HF_HUB_OFFLINE=1）
            │  双环境隔离：后端 .venv (Py3.13) 绝不 import 计算栈
            ▼
-        COMPUTE_VENV (/root/soft/ml_potential/.venv, Py3.12)
+        COMPUTE_VENV (Py3.12)
            ├── bin/maple  → MAPLE CLI → ANI/AIMNet2/MACE-OFF/UMA
            └── bin/python → app/compute/scripts/nequip_ase.py → NequIP-OAM-XL
 ```
@@ -48,13 +48,12 @@ COMPUTE_VENV（默认 `/root/soft/ml_potential/.venv`）是既有计算环境，
 只做存在性校验，绝不修改。金标准（benchmarks/references/）已由
 `scripts/make_golden_refs.sh` 生成并入库，一般无需重跑。
 
-注意：全部模型 checkpoint 集中存放于 `/root/soft/ml_potential/checkpoints/`
-（TICKET-0010），`MAPLE/maple/function/calculator/model` 是指向其中 `maple/`
-子目录的符号链接。其中 `checkpoints/maple/maceoff23s.pt` 是本地自制 scripted
-wrapper（TICKET-0003，权重许可为 ASL，仅限学术研究用途），**不在** MAPLE 官方
-发行/全新 checkout 中；换机或重新 clone MAPLE 后需用
-`scripts/make_maceoff23s_wrapper.py` 重新生成（脚本内含 pin 住的权重下载地址与
-SHA256 校验），否则 B14 与 maceoff23s 相关功能不可用。
+注意：全部模型 checkpoint 集中存放于 `/root/soft/ml_potential/checkpoints/`，
+`MAPLE/maple/function/calculator/model` 是指向其中 `maple/` 子目录的符号链接。
+其中 `checkpoints/maple/maceoff23s.pt` 是本地自制 scripted wrapper（权重许可为
+ASL，仅限学术研究用途），**不在** MAPLE 官方发行/全新 checkout 中；换机或重新
+clone MAPLE 后需用 `scripts/make_maceoff23s_wrapper.py` 重新生成（脚本内含 pin
+住的权重下载地址与 SHA256 校验），否则 B14 与 maceoff23s 相关功能不可用。
 
 ## 启动
 
@@ -106,22 +105,10 @@ bash scripts/e2e_smoke.sh    # 退出码 0 = 通过
 cd web && npm run build && npm test
 ```
 
-## 工单流程（tickets/）
-
-MAPLE/MLIP 库源码冻结、COMPUTE_VENV 冻结、checkpoint 冻结。以下改动必须先开
-`tickets/` 审批工单（复制 `tickets/TEMPLATE.md`），获批后实施：
-
-1. 修改 MAPLE/ 源码；2. 向 COMPUTE_VENV 装/升/卸包；3. 改动模型 checkpoint；
-4. 升级钉死的 a13n-harness / a13n-stream-protocol；5. 任何改变金标准数值的改动。
-
-仅在 mlip_agent/ 内新增框架代码、不改数值行为的改动不需要工单。
-现有工单见 `tickets/README.md`。
-
 ## 目录速查
 
-- `PLAN.md` — 唯一权威实施计划；`resource/decisions.md` — 架构决策记录（ADR）
 - `app/` — 后端（agent / tools / compute / api / state）
 - `web/` — 前端（React 18 + Vite + TS；3Dmol.js 按需加载渲染 3D 结构）
-- `benchmarks/` — B1–B19 验收任务集（v2：guided/recovery/unguided 三档 tier + 三轴报表，PLAN §3.2）+ judge + canned 剧本（archive/ 存放已验证运行记录）；`benchmarks/reaction/` — v3 反应能垒套件（GMTKN55 BH76 × 三档知识梯度，live 评测 agent 能力，PLAN §3.3）
+- `benchmarks/` — B1–B19 验收任务集（guided/recovery/unguided 三档 tier）+ judge + canned 剧本；`benchmarks/reaction/` — 反应能垒套件（GMTKN55 BH76 × 三档知识梯度，live 评测 agent 能力）
 - `scripts/` — bootstrap.sh / make_golden_refs.sh / make_dpa4_venv.sh / e2e_smoke.sh(.py)
-- `tickets/` — 审批工单（TEMPLATE.md + TICKET-000x）
+- `plugins/` — MAPLE 插件后端（NequIP / MACE）
